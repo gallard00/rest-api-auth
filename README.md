@@ -1,7 +1,7 @@
 # 🚀 REST API Auth
 
 API REST desarrollada con **Spring Boot, JWT y Docker**.  
-Este proyecto tiene como objetivo simular un entorno profesional, implementando autenticación con JSON Web Tokens, persistencia con PostgreSQL y documentación con Swagger.
+Este proyecto tiene como objetivo simular un entorno profesional, implementando autenticación con JSON Web Tokens, persistencia con MariaDB y documentación con Swagger.
 
 ## 🛠️ Tecnologías utilizadas
 - Java 17+
@@ -9,7 +9,7 @@ Este proyecto tiene como objetivo simular un entorno profesional, implementando 
   - Spring Web
   - Spring Data JPA
   - Spring Security
-- PostgreSQL
+- MariaDB
 - JWT (Json Web Token)
 - Docker & Docker Compose
 - Lombok
