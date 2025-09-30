@@ -33,6 +33,12 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
+    public UserResponse findByMail(String mail) {
+        return userRepository.findByMail(mail)
+                .map(userMapper::toResponse)
+                .orElseThrow(() -> new RuntimeException("Mail no encontrado"));
+    }
+
     public UserResponse updateUser(Long id, UserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
