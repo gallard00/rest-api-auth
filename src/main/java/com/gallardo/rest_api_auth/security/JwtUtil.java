@@ -1,5 +1,6 @@
 package com.gallardo.rest_api_auth.security;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,6 +17,7 @@ public class JwtUtil {
 
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
+    // Generar token
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
@@ -25,15 +27,12 @@ public class JwtUtil {
                 .compact();
     }
 
+    // Extraer username
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractAllClaims(token).getSubject();
     }
 
+    // Validar token
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
@@ -41,5 +40,19 @@ public class JwtUtil {
         } catch (JwtException e) {
             return false;
         }
+    }
+
+    // 🔑 Método faltante para el JwtFilter
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    // Auxiliar para chequear expiración si lo necesitás en el filtro
+    public boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
     }
 }
