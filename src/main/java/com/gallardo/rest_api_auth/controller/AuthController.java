@@ -1,12 +1,14 @@
 package com.gallardo.rest_api_auth.controller;
 
-import com.gallardo.rest_api_auth.dto.request.LoginRequest;
+import com.gallardo.rest_api_auth.dto.request.AuthRequest;
 import com.gallardo.rest_api_auth.dto.request.RegisterRequest;
 import com.gallardo.rest_api_auth.dto.response.AuthResponse;
 import com.gallardo.rest_api_auth.model.User;
 import com.gallardo.rest_api_auth.repository.UserRepository;
-import com.gallardo.rest_api_auth.security.JwtUtil;
+import com.gallardo.rest_api_auth.security.jwt.JwtUtil;
+import com.gallardo.rest_api_auth.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,35 +18,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final AuthService authService;
+    public AuthController(AuthService authService) { this.authService = authService; }
 
     @PostMapping("/register")
-    public String register(@RequestBody RegisterRequest request) {
-        User user = new User();
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
-        userRepository.save(user);
-        return "Usuario registrado correctamente";
+    public ResponseEntity<Void> register(@RequestBody RegisterRequest request) {
+        authService.register(request);
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Credenciales inválidas");
-        }
-
-        String token = jwtUtil.generateToken(user.getEmail()); // O podrías usar user.getId()
-        return new AuthResponse(token);
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        AuthResponse resp = authService.login(request);
+        return ResponseEntity.ok(resp);
     }
 }

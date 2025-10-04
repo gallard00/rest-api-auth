@@ -3,41 +3,43 @@ package com.gallardo.rest_api_auth.controller;
 import com.gallardo.rest_api_auth.dto.request.UserRequest;
 import com.gallardo.rest_api_auth.dto.response.UserResponse;
 import com.gallardo.rest_api_auth.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @PostMapping
-    public ResponseEntity<UserResponse> create(@RequestBody UserRequest request) {
-        return ResponseEntity.ok(userService.createUser(request));
+    public UserResponse create(@RequestBody UserRequest request) {
+        return userService.createUser(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getAll() {
-        return ResponseEntity.ok(userService.getAllUsers());
+    public List<UserResponse> getAll() {
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+    public UserResponse getById(@PathVariable Long id) {
+        return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @RequestBody UserRequest request) {
-        return ResponseEntity.ok(userService.updateUser(id, request));
+    public UserResponse update(@PathVariable Long id, @RequestBody UserRequest request) {
+        return userService.updateUser(id, request);
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        userService.deleteUserById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.noContent().build();
-    }
 }

@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component;
 public class UserMapper {
     public User toEntity(UserRequest request) {
         return User.builder()
-                .email(request.getEmail())
                 .name(request.getName())
-                .lastName(request.getLastName())
-                .password(request.getPassword())
+                .email(request.getEmail())
                 .build();
     }
 
