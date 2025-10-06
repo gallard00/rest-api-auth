@@ -40,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
         User u = User.builder()
                 .name(request.getName())
+                .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole() != null ? request.getRole() : Role.ROLE_USER) // importante
